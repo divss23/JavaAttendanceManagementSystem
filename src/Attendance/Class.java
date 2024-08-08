@@ -1,4 +1,4 @@
-package Attendance;
+package src.Attendance;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -21,8 +21,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
-public class Teachers {
-
+public class Class {
     DefaultTableModel model = new DefaultTableModel();
     Connection con;
     int check;
@@ -30,12 +29,10 @@ public class Teachers {
     JButton delete;
     JButton add;
 
-    public void teachersView() throws SQLException {
-
+    public void classView() {
+        JFrame frame = new JFrame();
         Font text = new Font("Times New Roman", Font.PLAIN, 18);
         Font btn = new Font("Times New Roman", Font.BOLD, 20);
-
-        JFrame frame = new JFrame();
 
         // ------------------------CLOSE---------------------------
         JLabel x = new JLabel("X");
@@ -72,56 +69,20 @@ public class Teachers {
         frame.add(panel);
         // ---------------------------------------------------------
 
-        // ----------------TABLE---------------------------------
-        @SuppressWarnings("serial")
-        JTable table = new JTable() {
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-        model = (DefaultTableModel) table.getModel();
-        model.addColumn("ID");
-        model.addColumn("USERNAME");
-        model.addColumn("NAME");
-        tblupdt();
-        table.getColumnModel().getColumn(0).setPreferredWidth(50);
-        table.getColumnModel().getColumn(1).setPreferredWidth(200);
-        table.getColumnModel().getColumn(2).setPreferredWidth(200);
-        JScrollPane scPane = new JScrollPane(table);
-        scPane.setBounds(500, 50, 480, 525);
-        frame.add(scPane);
-        // ------------------------------------------------------
-
         // --------------------ID-----------------------------------
         JLabel id = new JLabel("ID : ");
         id.setFont(text);
-        id.setBounds(25, 60, 40, 20);
+        id.setBounds(25, 150, 40, 20);
         id.setForeground(Color.decode("#DEE4E7"));
         frame.add(id);
         JTextField idbox = new JTextField();
-        idbox.setBounds(60, 60, 50, 25);
+        idbox.setBounds(60, 150, 50, 25);
         idbox.setBackground(Color.decode("#DEE4E7"));
         idbox.setFont(text);
         idbox.setForeground(Color.decode("#37474F"));
         idbox.setEditable(false);
-        idbox.setText(String.valueOf(getid()));
         frame.add(idbox);
         // --------------------------------------------------------
-
-        // ---------------------USERNAME-------------------------
-        JLabel user = new JLabel("USERNAME : ");
-        user.setFont(text);
-        user.setBounds(25, 120, 150, 20);
-        user.setForeground(Color.decode("#DEE4E7"));
-        frame.add(user);
-        JTextField username = new JTextField();
-        username.setBounds(25, 160, 400, 35);
-        username.setBackground(Color.decode("#DEE4E7"));
-        username.setFont(text);
-        username.setForeground(Color.decode("#37474F"));
-        username.setEditable(false);
-        frame.add(username);
-        // ------------------------------------------------------
 
         // -------------------NAME----------------------------------
         JLabel nm = new JLabel("NAME : ");
@@ -138,21 +99,6 @@ public class Teachers {
         frame.add(name);
         // --------------------------------------------------------
 
-        // ---------------------PASS--------------------------------
-        JLabel pass = new JLabel("PASSWORD : ");
-        pass.setFont(text);
-        pass.setBounds(25, 350, 150, 20);
-        pass.setForeground(Color.decode("#DEE4E7"));
-        frame.add(pass);
-        JTextField password = new JTextField();
-        password.setBounds(25, 380, 400, 35);
-        password.setBackground(Color.decode("#DEE4E7"));
-        password.setFont(text);
-        password.setForeground(Color.decode("#37474F"));
-        password.setEditable(false);
-        frame.add(password);
-        // -----------------------------------------------------------
-
         // --------------------SAVEBUTTON---------------------------
         JButton save = new JButton("SAVE");
         save.setBounds(25, 500, 125, 50);
@@ -166,19 +112,14 @@ public class Teachers {
             public void actionPerformed(ActionEvent e) {
                 if (check == 1) {
                     try {
-                        adder(Integer.parseInt(idbox.getText()), username.getText(), name.getText(),
-                                password.getText());
+                        adder(Integer.parseInt(idbox.getText()), name.getText());
                     } catch (SQLException e1) {
                         e1.printStackTrace();
                     }
                 } else if (check == 2) {
                     save.setEnabled(false);
                     try {
-                        if (password.getText().equals(""))
-                            editor(Integer.parseInt(idbox.getText()), username.getText(), name.getText());
-                        else
-                            editor(Integer.parseInt(idbox.getText()), username.getText(), name.getText(),
-                                    password.getText());
+                        editor(Integer.parseInt(idbox.getText()), name.getText());
                     } catch (SQLException e1) {
                         e1.printStackTrace();
                     }
@@ -188,8 +129,6 @@ public class Teachers {
                     edit.setEnabled(false);
                     delete.setEnabled(false);
                     name.setText("");
-                    username.setText("");
-                    password.setText("");
                     while (model.getRowCount() > 0)
                         model.removeRow(0);
                     tblupdt();
@@ -214,9 +153,7 @@ public class Teachers {
                 edit.setEnabled(false);
                 save.setEnabled(true);
                 check = 2;
-                username.setEditable(true);
                 name.setEditable(true);
-                password.setEditable(true);
             }
         });
         // -------------------------------------------------------
@@ -232,11 +169,9 @@ public class Teachers {
             @Override
             public void actionPerformed(ActionEvent e) {
                 add.setEnabled(false);
-                save.setEnabled(true);
                 delete.setEnabled(false);
-                username.setEditable(true);
+                save.setEnabled(true);
                 name.setEditable(true);
-                password.setEditable(true);
                 check = 1;
                 try {
                     idbox.setText(String.valueOf(getid()));
@@ -258,17 +193,13 @@ public class Teachers {
         delete.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                username.setEditable(false);
                 name.setEditable(false);
-                password.setEditable(false);
                 edit.setEnabled(false);
                 add.setEnabled(true);
                 try {
                     deleter(Integer.parseInt(idbox.getText()));
                     idbox.setText(String.valueOf(getid()));
                     name.setText("");
-                    username.setText("");
-                    password.setText("");
                     while (model.getRowCount() > 0)
                         model.removeRow(0);
                     tblupdt();
@@ -279,19 +210,32 @@ public class Teachers {
         });
         // ------------------------------------------------------------
 
+        // ----------------TABLE---------------------------------
+        @SuppressWarnings("serial")
+        JTable table = new JTable() {
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        model = (DefaultTableModel) table.getModel();
+        model.addColumn("ID");
+        model.addColumn("NAME");
+        tblupdt();
+        table.getColumnModel().getColumn(0).setPreferredWidth(100);
+        table.getColumnModel().getColumn(1).setPreferredWidth(300);
+        JScrollPane scPane = new JScrollPane(table);
+        scPane.setBounds(500, 50, 480, 525);
+        frame.add(scPane);
+        // ------------------------------------------------------
+
         // -----------------TABLE ACTION----------------------------
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 int row = table.getSelectedRow();
-                password.setText("");
                 idbox.setText(String.valueOf(table.getModel().getValueAt(row, 0)));
-                username.setText(String.valueOf(table.getModel().getValueAt(row, 1)));
-                name.setText(String.valueOf(table.getModel().getValueAt(row, 2)));
+                name.setText(String.valueOf(table.getModel().getValueAt(row, 1)));
                 edit.setEnabled(true);
-                username.setEditable(false);
-                password.setEditable(false);
-                name.setEditable(false);
                 save.setEnabled(false);
                 delete.setEnabled(true);
             }
@@ -317,8 +261,7 @@ public class Teachers {
             for (int i = 0; res.next(); i++) {
                 model.addRow(new Object[0]);
                 model.setValueAt(res.getInt("id"), i, 0);
-                model.setValueAt(res.getString("username"), i, 1);
-                model.setValueAt(res.getString("name"), i, 2);
+                model.setValueAt(res.getString("name"), i, 1);
             }
         } catch (SQLException e1) {
             e1.printStackTrace();
@@ -327,7 +270,7 @@ public class Teachers {
 
     public int getid() throws SQLException {
         Statement stm = con.createStatement();
-        ResultSet rst = stm.executeQuery("SELECT MAX(id) from user");
+        ResultSet rst = stm.executeQuery("SELECT MAX(id) from class");
         if (rst.next()) {
             return rst.getInt("MAX(id)") + 1;
         } else {
@@ -337,7 +280,7 @@ public class Teachers {
 
     public ResultSet dbSearch() throws SQLException {
         // ENTER PORT, USER, PASSWORD.
-        String str1 = "SELECT user.id, user.username, teachers.name FROM user, teachers where user.id = teachers.id";
+        String str1 = "SELECT * FROM class";
         String url = "jdbc:mysql://localhost:3306/attendance";
         String user = "root";
         String pass = "password";
@@ -347,36 +290,21 @@ public class Teachers {
         return rst;
     }
 
-    public void adder(int id, String user, String name, String password) throws SQLException {
-        String adding = "insert into user values (" + id + ", '" + user + "', '" + name + "', '" + password + "', 2)";
-        String adding2 = "insert into teachers values (" + id + ", '" + name + "')";
+    public void adder(int id, String name) throws SQLException {
+        String adding = "insert into class values (" + id + ", '" + name + "')";
         Statement stm = con.createStatement();
         stm.executeUpdate(adding);
-        stm.executeUpdate(adding2);
     }
 
     public void deleter(int id) throws SQLException {
-        String del = "DELETE FROM teachers WHERE id = " + id;
-        String del2 = "DELETE FROM user WHERE id = " + id;
+        String del = "DELETE FROM class WHERE id = " + id;
         Statement stm = con.createStatement();
         stm.executeUpdate(del);
-        stm.executeUpdate(del2);
     }
 
-    public void editor(int id, String username, String name, String password) throws SQLException {
-        String update = "UPDATE user SET username = '" + username + "', name = '" + name + "', password = '" + password
-                + "'WHERE id = " + id;
-        String update2 = "UPDATE teachers SET name = '" + name + "' WHERE id = " + id;
+    public void editor(int id, String name) throws SQLException {
+        String update = "UPDATE class SET name = '" + name + "'WHERE id = " + id;
         Statement stm = con.createStatement();
         stm.executeUpdate(update);
-        stm.executeUpdate(update2);
-    }
-
-    public void editor(int id, String username, String name) throws SQLException {
-        String update = "UPDATE user SET username = '" + username + "', name = '" + name + "' WHERE id = " + id;
-        String update2 = "UPDATE teachers SET name = '" + name + "' WHERE id = " + id;
-        Statement stm = con.createStatement();
-        stm.executeUpdate(update);
-        stm.executeUpdate(update2);
     }
 }

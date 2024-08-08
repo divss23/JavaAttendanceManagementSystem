@@ -1,4 +1,4 @@
-package Attendance;
+package src.Attendance;
 
 import java.awt.Color;
 import java.awt.Font;

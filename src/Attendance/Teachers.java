@@ -1,4 +1,4 @@
-package Attendance;
+package src.Attendance;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -21,19 +21,21 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
-public class Admin {
+public class Teachers {
 
     DefaultTableModel model = new DefaultTableModel();
-    Font text = new Font("Times New Roman", Font.PLAIN, 18);
     Connection con;
     int check;
     JButton edit;
     JButton delete;
     JButton add;
 
-    public void adminView() throws NumberFormatException, SQLException {
-        JFrame frame = new JFrame();
+    public void teachersView() throws SQLException {
+
+        Font text = new Font("Times New Roman", Font.PLAIN, 18);
         Font btn = new Font("Times New Roman", Font.BOLD, 20);
+
+        JFrame frame = new JFrame();
 
         // ------------------------CLOSE---------------------------
         JLabel x = new JLabel("X");
@@ -102,6 +104,7 @@ public class Admin {
         idbox.setFont(text);
         idbox.setForeground(Color.decode("#37474F"));
         idbox.setEditable(false);
+        idbox.setText(String.valueOf(getid()));
         frame.add(idbox);
         // --------------------------------------------------------
 
@@ -322,18 +325,6 @@ public class Admin {
         }
     }
 
-    public ResultSet dbSearch() throws SQLException {
-        // ENTER PORT, USER, PASSWORD.
-        String str1 = "SELECT * FROM user WHERE prio = 1";
-        String url = "jdbc:mysql://localhost:3306/attendance";
-        String user = "root";
-        String pass = "password";
-        con = DriverManager.getConnection(url, user, pass);
-        Statement stm = con.createStatement();
-        ResultSet rst = stm.executeQuery(str1);
-        return rst;
-    }
-
     public int getid() throws SQLException {
         Statement stm = con.createStatement();
         ResultSet rst = stm.executeQuery("SELECT MAX(id) from user");
@@ -344,28 +335,48 @@ public class Admin {
         }
     }
 
+    public ResultSet dbSearch() throws SQLException {
+        // ENTER PORT, USER, PASSWORD.
+        String str1 = "SELECT user.id, user.username, teachers.name FROM user, teachers where user.id = teachers.id";
+        String url = "jdbc:mysql://localhost:3306/attendance";
+        String user = "root";
+        String pass = "password";
+        con = DriverManager.getConnection(url, user, pass);
+        Statement stm = con.createStatement();
+        ResultSet rst = stm.executeQuery(str1);
+        return rst;
+    }
+
     public void adder(int id, String user, String name, String password) throws SQLException {
-        String adding = "insert into user values (" + id + ", '" + user + "', '" + name + "', '" + password + "', 1)";
+        String adding = "insert into user values (" + id + ", '" + user + "', '" + name + "', '" + password + "', 2)";
+        String adding2 = "insert into teachers values (" + id + ", '" + name + "')";
         Statement stm = con.createStatement();
         stm.executeUpdate(adding);
+        stm.executeUpdate(adding2);
     }
 
     public void deleter(int id) throws SQLException {
-        String del = "DELETE FROM user WHERE id = " + id;
+        String del = "DELETE FROM teachers WHERE id = " + id;
+        String del2 = "DELETE FROM user WHERE id = " + id;
         Statement stm = con.createStatement();
         stm.executeUpdate(del);
+        stm.executeUpdate(del2);
     }
 
     public void editor(int id, String username, String name, String password) throws SQLException {
         String update = "UPDATE user SET username = '" + username + "', name = '" + name + "', password = '" + password
                 + "'WHERE id = " + id;
+        String update2 = "UPDATE teachers SET name = '" + name + "' WHERE id = " + id;
         Statement stm = con.createStatement();
         stm.executeUpdate(update);
+        stm.executeUpdate(update2);
     }
 
     public void editor(int id, String username, String name) throws SQLException {
         String update = "UPDATE user SET username = '" + username + "', name = '" + name + "' WHERE id = " + id;
+        String update2 = "UPDATE teachers SET name = '" + name + "' WHERE id = " + id;
         Statement stm = con.createStatement();
         stm.executeUpdate(update);
+        stm.executeUpdate(update2);
     }
 }
